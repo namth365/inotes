@@ -13,8 +13,15 @@
 </head>
 
 <body>
+    <?php include '../database.php'; ?>
+    <?php
 
-    <div class="container">
+    $sql    = "SELECT * FROM note_type";
+    $stmt  = $connect->query($sql);
+    $stmt->setFetchMode(PDO::FETCH_OBJ);
+    $notes = $stmt->fetchAll();
+    ?>
+    <div style="width:900px" class="container">
         <div class="row">
             <div class="col-lg-12">
                 <h3 class="text-center">Danh Sách Các Ghi Chú</h3>
@@ -31,7 +38,7 @@
                 </div>
                 <div class="col-lg-3">
                     <div class="col-auto">
-                        <a class="btn btn-success" href="http://localhost/iNotes/view/add.php">Thêm Mới</a>
+                        <a class="btn btn-success" href="add-notes.php">Thêm Mới</a>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -54,37 +61,39 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>
-                                <a class="btn btn-primary" href="http://localhost/iNotes/view/edit.php">Sửa</a>
-                                <a class="btn btn-danger" href="http://localhost/iNotes/view/delete.php" onclick="return confirm('Bạn chắc chắn muốn xoá?')">Xóa</a>
-                            </td>
-                        </tr>
-
+                        <?php
+                        foreach ($notes as $note_type) : ?>
+                            <tr>
+                                <th scope="row"><?= $note_type->id; ?></th>
+                                <th scope="row"> <a href="view-notes.php?id=<?= $note_type->id; ?>"><?= $note_type->name; ?> </a></th>
+                                <th scope="row"><?= $note_type->description; ?></th>
+                                <td>
+                                    <a class="btn btn-primary" href="edit-notes.php?id=<?= $note_type->id; ?>">Sửa</a>
+                                    <a class="btn btn-danger" href="delete-notes.php?id=<?= $note_type->id; ?>" onclick="return confirm('Bạn chắc chắn muốn xoá?')">Xóa</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                     </tbody>
 
                 </table>
             </div>
         </div>
 
-        <div class="row">
+        <div class="pagination">
             <div class="col-lg-12">
                 <div class="float-right" style="float:right">
                     <nav aria-label="Page navigation example">
                         <ul class="pagination">
                             <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Previous">
+                                <a class="page-link" href="list-notes.php?page=' . ($current_page - 1) . '" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
-                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="list-notes.php?page=' . ($current_page - 1) . '">1</a></li>
                             <li class="page-item"><a class="page-link" href="#">2</a></li>
                             <li class="page-item"><a class="page-link" href="#">3</a></li>
                             <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Next">
+                                <a class="page-link" href="list-notes.php?page=' . ($current_page + 1) . '" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
@@ -97,7 +106,29 @@
 
     </div>
 
+    <div class="pagination">
+        <?php
 
+
+        if ($current_page > 1 && $total_page > 1) {
+            echo '<a href="list-notes.php?page=' . ($current_page - 1) . '">Prev</a> | ';
+        }
+
+
+        for ($i = 1; $i <= $total_page; $i++) {
+            if ($i == $current_page) {
+                echo '<span>' . $i . '</span> | ';
+            } else {
+                echo '<a href="list-notes.php?page=' . $i . '">' . $i . '</a> | ';
+            }
+        }
+
+        if ($current_page < $total_page && $total_page > 1) {
+            echo '<a href="list-notes.php?page=' . ($current_page + 1) . '">Next</a> | ';
+        }
+        ?>
+
+    </div>
 
 
 </body>
